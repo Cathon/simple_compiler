@@ -1,0 +1,9 @@
+program test
+/*this is zhushi*/
+var x,y,z:integer;
+    a:integer;
+begin
+    x:=23;
+    y:=x*2;
+    z:=x+y
+end.
