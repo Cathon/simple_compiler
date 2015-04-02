@@ -50,13 +50,13 @@ variable        [_A-Za-z][_a-zA-Z0-9]*
 
 %x COM
 %%
-"//"[^\n]*\n    ;//eat out one-line comment
+"//"[^\n]*\n    return -1;//eat out one-line comment
 "/*"            BEGIN(COM);
-<COM>[^*]*      ;//eat out anything that's not '*'
-<COM>" *"+[^*/]* ;
-<COM>"*"+"/"    BEGIN (INITIAL);//eat out block comment
+<COM>\n         return -1;
+<COM>.          return -1;
+<COM>"*/"       BEGIN (INITIAL);//eat out block comment
 
-[ \t\n]         ;//eat out white space
+[\040\t\n]      return -1;//eat out white space
 program         return KW_PROGRAM;
 var             return KW_VAR;
 procedure       return KW_PROCEDURE;
@@ -104,39 +104,39 @@ void main(int argc, char **argv){
 
     int c;
     while(c = yylex()){
-        static j = 0;
 
+        if (c == -1) continue;
         if(c <= 11 && c >= 1){
             /*key words*/
-            printf("(%d %d %s) ", KW_ID, c, yytext);
+            printf("(%d %d %s) \n", KW_ID, c, yytext);
         }else if(c == UW_NAME){
             /*variable*/
+            if (yyleng > 8) {
+                printf("(ERROR: %s is too long) \n", yytext);
+                continue;
+            }
             int pos = findInWordList(yytext);
             if (pos == -1){
                 pos = insertIntoWordList(yytext);
             }
             if (pos != -1){
                 /*from 1 on*/
-                printf("(%d %d %s) ", UW_ID, pos, yytext);
+                printf("(%d %d %s) \n", UW_ID, pos, yytext);
             }else{
                 /*"defined too much variable quantity.*/
-                printf("Error tmvq.");
+                printf("Error tmvq.\n");
             }
         }else if(c == NUMBER){
             /*numbers*/
-            printf("(%d %s) ", NUM_ID, yytext);
+            printf("(%d %s) \n", NUM_ID, yytext);
         }else if(c < 40 && c > 20){
             /*operators*/
-            printf("(%d %s) ",c , yytext);
+            printf("(%d %s) \n",c , yytext);
         }else if(c == 250){
             /*error(undefined)*/
-            printf("ERROR(\"%s\") ", yytext);
+            printf("ERROR(\"%s\") \n", yytext);
         }
-
-        j++;
-        if (j == j/4*4) printf("\n");
     }
-    printf("\n");
 }
 
 int findInWordList(char *word){
