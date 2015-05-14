@@ -1,4 +1,5 @@
-HOW:
+
+## HowTo
 
 1. flex scanner.l 
 2. gcc -o analyse lex.yy.c
@@ -6,7 +7,7 @@ HOW:
 4. you can see the answer in output
 
 
-NOTE:
+## NOTE:
 
 1. when the program read '0d0a', it can only read '0a' as '\n', '0d' will cause a problem
 so we use `dos2unix` to change '0d0a' to '0a' in a file at first
